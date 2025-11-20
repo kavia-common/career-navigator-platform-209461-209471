@@ -1,3 +1,8 @@
+/**
+ * Simple DB Visualizer server
+ * Note: Express must be required from the installed module.
+ * Do NOT change to './lib/express' or any non-standard path.
+ */
 const express = require('express');
 const path = require('path');
 const fs = require('fs');

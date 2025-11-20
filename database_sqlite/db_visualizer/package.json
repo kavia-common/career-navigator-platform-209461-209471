@@ -5,10 +5,11 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js --host 0.0.0.0",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "prestart": "node -e \"try{require('fs').accessSync('node_modules');process.exit(0)}catch(e){process.exit(1)}\" || npm install"
   },
   "dependencies": {
-    "express": "^4.18.2",
+    "express": "^4.18.3",
     "pg": "^8.11.3",
     "mysql2": "^3.6.3",
     "sqlite3": "^5.1.6",
