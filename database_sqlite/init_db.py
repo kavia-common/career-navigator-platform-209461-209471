@@ -118,6 +118,7 @@ def create_schema(conn: sqlite3.Connection):
     """)
 
     # Learning resources and mapping to skills
+    # Note: learning_resources has UNIQUE(title, url) to support idempotent upsert semantics.
     cur.execute("""
     CREATE TABLE IF NOT EXISTS learning_resources (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -126,7 +127,8 @@ def create_schema(conn: sqlite3.Connection):
         provider TEXT,
         resource_type TEXT,              -- e.g., course, article, book
         difficulty TEXT,                 -- beginner/intermediate/advanced
-        description TEXT
+        description TEXT,
+        UNIQUE (title, url)              -- ensure idempotent upsert on known identity
     )
     """)
 
@@ -232,18 +234,17 @@ def _upsert_resource(cur, res):
     cur.execute("""
         INSERT INTO learning_resources (title, url, provider, resource_type, difficulty, description)
         VALUES (?, ?, ?, ?, ?, ?)
-        ON CONFLICT(url) DO UPDATE SET
-            title=excluded.title,
+        ON CONFLICT(title, url) DO UPDATE SET
             provider=excluded.provider,
             resource_type=excluded.resource_type,
             difficulty=excluded.difficulty,
             description=excluded.description
     """, (res["title"], res["url"], res.get("provider"), res.get("resource_type"),
           res.get("difficulty"), res.get("description")))
-    # fetch id
-    cur.execute("SELECT id FROM learning_resources WHERE url = ?", (res["url"],))
+    # fetch id precisely by the composite key
+    cur.execute("SELECT id FROM learning_resources WHERE title = ? AND url = ?", (res["title"], res["url"]))
     row = cur.fetchone()
-    return row[0]
+    return row[0] if row else None
 
 def _upsert_resource_skill(cur, resource_id, skill_code_or_name, lv_min, lv_max):
     skill_id = _get_skill_id(cur, skill_code_or_name)
