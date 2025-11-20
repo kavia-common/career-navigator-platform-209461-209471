@@ -119,6 +119,10 @@ def create_schema(conn: sqlite3.Connection):
 
     # Learning resources and mapping to skills
     # Note: learning_resources has UNIQUE(title, url) to support idempotent upsert semantics.
+    # IMPORTANT: Some existing databases may have been created without this UNIQUE constraint.
+    # In those cases, ON CONFLICT(title, url) would fail. We:
+    # - Create the table with the UNIQUE constraint for new DBs.
+    # - Detect constraint presence for existing DBs and use a safe UPSERT fallback if absent.
     cur.execute("""
     CREATE TABLE IF NOT EXISTS learning_resources (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -230,19 +234,75 @@ def _upsert_role_skill_req(cur, role_id, skill_id, target_level, weight):
             weight=excluded.weight
     """, (role_id, skill_id, target_level, weight))
 
+def _has_unique_on_learning_resources(cur) -> bool:
+    """
+    Detect if learning_resources has a UNIQUE constraint on (title, url).
+    Returns True if found, False otherwise.
+    """
+    try:
+        cur.execute("PRAGMA index_list('learning_resources')")
+        indexes = cur.fetchall() or []
+        # Each row format: (seq, name, unique, origin, partial)
+        for idx in indexes:
+            if len(idx) >= 3 and idx[2] == 1:  # unique index
+                idx_name = idx[1]
+                # Inspect columns of this index
+                cur.execute(f"PRAGMA index_info('{idx_name}')")
+                cols = [r[2] for r in (cur.fetchall() or [])]
+                if cols == ["title", "url"]:
+                    return True
+        # As a fallback, scan table SQL definition if available
+        cur.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='learning_resources'")
+        row = cur.fetchone()
+        if row and row[0]:
+            return "UNIQUE (title, url)" in row[0].replace("\n", " ").replace("\t", " ")
+    except sqlite3.Error:
+        pass
+    return False
+
 def _upsert_resource(cur, res):
-    cur.execute("""
-        INSERT INTO learning_resources (title, url, provider, resource_type, difficulty, description)
-        VALUES (?, ?, ?, ?, ?, ?)
-        ON CONFLICT(title, url) DO UPDATE SET
-            provider=excluded.provider,
-            resource_type=excluded.resource_type,
-            difficulty=excluded.difficulty,
-            description=excluded.description
-    """, (res["title"], res["url"], res.get("provider"), res.get("resource_type"),
-          res.get("difficulty"), res.get("description")))
+    """
+    Insert or update a learning resource idempotently.
+    Uses ON CONFLICT(title, url) when a matching UNIQUE constraint exists.
+    Falls back to INSERT OR IGNORE + UPDATE pattern if constraint is absent (legacy DBs).
+    """
+    title = res["title"]
+    url = res["url"]
+    provider = res.get("provider")
+    resource_type = res.get("resource_type")
+    difficulty = res.get("difficulty")
+    description = res.get("description")
+
+    if _has_unique_on_learning_resources(cur):
+        # Preferred path with composite UNIQUE constraint
+        cur.execute("""
+            INSERT INTO learning_resources (title, url, provider, resource_type, difficulty, description)
+            VALUES (?, ?, ?, ?, ?, ?)
+            ON CONFLICT(title, url) DO UPDATE SET
+                provider=excluded.provider,
+                resource_type=excluded.resource_type,
+                difficulty=excluded.difficulty,
+                description=excluded.description
+        """, (title, url, provider, resource_type, difficulty, description))
+    else:
+        # Fallback path: safe upsert without relying on ON CONFLICT target
+        # 1) Attempt to insert (ignored if duplicate)
+        cur.execute("""
+            INSERT OR IGNORE INTO learning_resources (title, url, provider, resource_type, difficulty, description)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (title, url, provider, resource_type, difficulty, description))
+        # 2) Update existing row if it already existed
+        cur.execute("""
+            UPDATE learning_resources
+               SET provider = ?,
+                   resource_type = ?,
+                   difficulty = ?,
+                   description = ?
+             WHERE title = ? AND url = ?
+        """, (provider, resource_type, difficulty, description, title, url))
+
     # fetch id precisely by the composite key
-    cur.execute("SELECT id FROM learning_resources WHERE title = ? AND url = ?", (res["title"], res["url"]))
+    cur.execute("SELECT id FROM learning_resources WHERE title = ? AND url = ?", (title, url))
     row = cur.fetchone()
     return row[0] if row else None
 
