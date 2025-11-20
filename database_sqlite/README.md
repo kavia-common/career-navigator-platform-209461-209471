@@ -28,8 +28,9 @@ Re-run to re-seed safely (upserts rather than duplicates).
 
 Legacy note on learning_resources upsert
 - New databases include a UNIQUE(title, url) constraint to support ON CONFLICT upserts.
-- If you created the DB with an older script that lacked this constraint, seeding falls back to INSERT OR IGNORE + UPDATE by (title, url) to avoid errors.
-- To enforce uniqueness on older DBs, recreate the DB or manually add a unique index on (title, url).
+- init_db.py now attempts a lightweight migration by creating a unique index on (title, url) if it does not exist: CREATE UNIQUE INDEX IF NOT EXISTS ux_learning_resources_title_url ON learning_resources(title, url).
+  - If duplicates exist in a legacy DB, this migration will be skipped and seeding will still work using a fallback pattern (INSERT OR IGNORE + UPDATE).
+- If you want to enforce uniqueness on older DBs with duplicates, first deduplicate rows in learning_resources by (title, url), then re-run init_db.py.
 
 Seed files
 - seeds/sfia_skills.json

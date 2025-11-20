@@ -49,7 +49,12 @@ def connect(db_path: str) -> sqlite3.Connection:
     return conn
 
 def create_schema(conn: sqlite3.Connection):
-    """Create all required tables, constraints, and indexes if missing."""
+    """Create all required tables, constraints, and indexes if missing.
+
+    Also performs a lightweight migration to ensure learning_resources has a UNIQUE(title, url)
+    index for new databases. For legacy databases that lack this constraint, seeds will still
+    succeed by using a fallback upsert pattern.
+    """
     cur = conn.cursor()
 
     # Core entities
@@ -118,11 +123,7 @@ def create_schema(conn: sqlite3.Connection):
     """)
 
     # Learning resources and mapping to skills
-    # Note: learning_resources has UNIQUE(title, url) to support idempotent upsert semantics.
-    # IMPORTANT: Some existing databases may have been created without this UNIQUE constraint.
-    # In those cases, ON CONFLICT(title, url) would fail. We:
-    # - Create the table with the UNIQUE constraint for new DBs.
-    # - Detect constraint presence for existing DBs and use a safe UPSERT fallback if absent.
+    # For new DBs, define the UNIQUE(title, url) constraint in the table DDL.
     cur.execute("""
     CREATE TABLE IF NOT EXISTS learning_resources (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -135,6 +136,17 @@ def create_schema(conn: sqlite3.Connection):
         UNIQUE (title, url)              -- ensure idempotent upsert on known identity
     )
     """)
+
+    # Lightweight migration for legacy DBs: ensure a unique index exists if possible.
+    try:
+        # If the unique index already exists, this will do nothing.
+        # If the legacy DB didn't have any duplicates, this will succeed.
+        # If duplicates exist, this will raise an IntegrityError and we will skip,
+        # but seeding will still work using the fallback upsert logic.
+        cur.execute("CREATE UNIQUE INDEX IF NOT EXISTS ux_learning_resources_title_url ON learning_resources(title, url)")
+    except sqlite3.Error:
+        # Leave as-is; fallback logic will handle upserts without ON CONFLICT
+        pass
 
     cur.execute("""
     CREATE TABLE IF NOT EXISTS learning_resource_skills (
