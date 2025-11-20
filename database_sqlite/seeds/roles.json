@@ -1,0 +1,362 @@
+[
+  {
+    "name": "Junior Software Engineer",
+    "family": "Engineering",
+    "seniority": "Junior",
+    "description": "Entry-level engineer contributing to implementation and testing.",
+    "requirements": [
+      { "skill": "SWEN", "target_level": 2, "weight": 1.0 },
+      { "skill": "COMM", "target_level": 2, "weight": 0.8 },
+      { "skill": "AGIL", "target_level": 2, "weight": 0.8 },
+      { "skill": "DEOP", "target_level": 2, "weight": 0.6 },
+      { "skill": "SECU", "target_level": 2, "weight": 0.6 },
+      { "skill": "DATA", "target_level": 2, "weight": 0.5 },
+      { "skill": "UXDG", "target_level": 2, "weight": 0.4 },
+      { "skill": "RISK", "target_level": 2, "weight": 0.3 },
+      { "skill": "ANAL", "target_level": 2, "weight": 0.5 },
+      { "skill": "CLDT", "target_level": 2, "weight": 0.6 }
+    ]
+  },
+  {
+    "name": "Software Engineer",
+    "family": "Engineering",
+    "seniority": "Mid",
+    "description": "Implements features, writes tests, and participates in design.",
+    "requirements": [
+      { "skill": "SWEN", "target_level": 3, "weight": 1.0 },
+      { "skill": "DEOP", "target_level": 3, "weight": 0.8 },
+      { "skill": "AGIL", "target_level": 3, "weight": 0.8 },
+      { "skill": "COMM", "target_level": 3, "weight": 0.8 },
+      { "skill": "SECU", "target_level": 3, "weight": 0.7 },
+      { "skill": "CLDT", "target_level": 3, "weight": 0.7 },
+      { "skill": "RISK", "target_level": 3, "weight": 0.5 },
+      { "skill": "ANAL", "target_level": 3, "weight": 0.6 },
+      { "skill": "DATA", "target_level": 3, "weight": 0.6 },
+      { "skill": "UXDG", "target_level": 2, "weight": 0.4 }
+    ]
+  },
+  {
+    "name": "Senior Software Engineer",
+    "family": "Engineering",
+    "seniority": "Senior",
+    "description": "Leads implementation, mentors others, and influences design decisions.",
+    "requirements": [
+      { "skill": "SWEN", "target_level": 4, "weight": 1.0 },
+      { "skill": "DEOP", "target_level": 3, "weight": 0.8 },
+      { "skill": "AGIL", "target_level": 4, "weight": 0.8 },
+      { "skill": "COMM", "target_level": 4, "weight": 0.9 },
+      { "skill": "SECU", "target_level": 3, "weight": 0.7 },
+      { "skill": "CLDT", "target_level": 4, "weight": 0.7 },
+      { "skill": "RISK", "target_level": 3, "weight": 0.6 },
+      { "skill": "ANAL", "target_level": 3, "weight": 0.6 },
+      { "skill": "ARCH", "target_level": 3, "weight": 0.8 },
+      { "skill": "DATA", "target_level": 3, "weight": 0.5 }
+    ]
+  },
+  {
+    "name": "Staff Software Engineer",
+    "family": "Engineering",
+    "seniority": "Staff",
+    "description": "Drives technical direction across teams and leads complex initiatives.",
+    "requirements": [
+      { "skill": "SWEN", "target_level": 5, "weight": 1.0 },
+      { "skill": "ARCH", "target_level": 4, "weight": 0.9 },
+      { "skill": "COMM", "target_level": 5, "weight": 0.9 },
+      { "skill": "DEOP", "target_level": 4, "weight": 0.8 },
+      { "skill": "CLDT", "target_level": 4, "weight": 0.8 },
+      { "skill": "RISK", "target_level": 4, "weight": 0.7 },
+      { "skill": "SECU", "target_level": 4, "weight": 0.7 },
+      { "skill": "AGIL", "target_level": 4, "weight": 0.7 },
+      { "skill": "DATA", "target_level": 3, "weight": 0.5 },
+      { "skill": "LEAD", "target_level": 4, "weight": 0.9 }
+    ]
+  },
+  {
+    "name": "Engineering Manager",
+    "family": "Leadership",
+    "seniority": "Manager",
+    "description": "Leads engineering team, delivery, growth, and practices.",
+    "requirements": [
+      { "skill": "LEAD", "target_level": 4, "weight": 1.0 },
+      { "skill": "COMM", "target_level": 5, "weight": 0.9 },
+      { "skill": "STMG", "target_level": 4, "weight": 0.9 },
+      { "skill": "PRMG", "target_level": 4, "weight": 0.8 },
+      { "skill": "AGIL", "target_level": 4, "weight": 0.8 },
+      { "skill": "RISK", "target_level": 4, "weight": 0.7 },
+      { "skill": "SECU", "target_level": 3, "weight": 0.5 },
+      { "skill": "ARCH", "target_level": 3, "weight": 0.6 },
+      { "skill": "SWEN", "target_level": 4, "weight": 0.6 },
+      { "skill": "PRMG2", "target_level": 4, "weight": 0.8 }
+    ]
+  },
+  {
+    "name": "Director of Engineering",
+    "family": "Leadership",
+    "seniority": "Director",
+    "description": "Owns multi-team strategy, outcomes, and org health.",
+    "requirements": [
+      { "skill": "LEAD", "target_level": 5, "weight": 1.0 },
+      { "skill": "PGMG", "target_level": 5, "weight": 0.9 },
+      { "skill": "COMM", "target_level": 6, "weight": 0.9 },
+      { "skill": "STMG", "target_level": 5, "weight": 0.9 },
+      { "skill": "RISK", "target_level": 5, "weight": 0.8 },
+      { "skill": "ARCH", "target_level": 4, "weight": 0.7 },
+      { "skill": "PRMG2", "target_level": 5, "weight": 0.8 },
+      { "skill": "SECU", "target_level": 4, "weight": 0.6 },
+      { "skill": "DEOP", "target_level": 4, "weight": 0.5 },
+      { "skill": "AGIL", "target_level": 5, "weight": 0.7 }
+    ]
+  },
+  {
+    "name": "Product Manager",
+    "family": "Product",
+    "seniority": "Mid",
+    "description": "Owns product outcomes; discovers, prioritizes, and collaborates to deliver value.",
+    "requirements": [
+      { "skill": "PRMG2", "target_level": 4, "weight": 1.0 },
+      { "skill": "ANAL", "target_level": 4, "weight": 0.8 },
+      { "skill": "COMM", "target_level": 4, "weight": 0.9 },
+      { "skill": "STMG", "target_level": 4, "weight": 0.8 },
+      { "skill": "AGIL", "target_level": 3, "weight": 0.7 },
+      { "skill": "PMKT", "target_level": 3, "weight": 0.7 },
+      { "skill": "DATA", "target_level": 3, "weight": 0.6 },
+      { "skill": "UXRD", "target_level": 3, "weight": 0.6 },
+      { "skill": "RISK", "target_level": 3, "weight": 0.5 },
+      { "skill": "LEAD", "target_level": 3, "weight": 0.6 }
+    ]
+  },
+  {
+    "name": "Senior Product Manager",
+    "family": "Product",
+    "seniority": "Senior",
+    "description": "Leads product strategy in a domain and coaches PMs.",
+    "requirements": [
+      { "skill": "PRMG2", "target_level": 5, "weight": 1.0 },
+      { "skill": "ANAL", "target_level": 4, "weight": 0.8 },
+      { "skill": "COMM", "target_level": 5, "weight": 0.9 },
+      { "skill": "STMG", "target_level": 5, "weight": 0.8 },
+      { "skill": "AGIL", "target_level": 4, "weight": 0.7 },
+      { "skill": "PMKT", "target_level": 4, "weight": 0.7 },
+      { "skill": "DATA", "target_level": 4, "weight": 0.7 },
+      { "skill": "UXRD", "target_level": 4, "weight": 0.6 },
+      { "skill": "RISK", "target_level": 4, "weight": 0.6 },
+      { "skill": "LEAD", "target_level": 4, "weight": 0.8 }
+    ]
+  },
+  {
+    "name": "UX Designer",
+    "family": "Design",
+    "seniority": "Mid",
+    "description": "Designs user-centered experiences and interfaces.",
+    "requirements": [
+      { "skill": "UXDG", "target_level": 4, "weight": 1.0 },
+      { "skill": "UXRD", "target_level": 3, "weight": 0.9 },
+      { "skill": "COMM", "target_level": 4, "weight": 0.8 },
+      { "skill": "ANAL", "target_level": 3, "weight": 0.6 },
+      { "skill": "PRMG2", "target_level": 3, "weight": 0.5 },
+      { "skill": "AGIL", "target_level": 3, "weight": 0.6 },
+      { "skill": "SWEN", "target_level": 2, "weight": 0.3 },
+      { "skill": "SECU", "target_level": 2, "weight": 0.2 },
+      { "skill": "RISK", "target_level": 3, "weight": 0.4 },
+      { "skill": "LEAD", "target_level": 3, "weight": 0.5 }
+    ]
+  },
+  {
+    "name": "Data Engineer",
+    "family": "Data",
+    "seniority": "Mid",
+    "description": "Builds reliable data pipelines, storage, and processing.",
+    "requirements": [
+      { "skill": "DATA", "target_level": 4, "weight": 1.0 },
+      { "skill": "CLDT", "target_level": 4, "weight": 0.8 },
+      { "skill": "DEOP", "target_level": 3, "weight": 0.8 },
+      { "skill": "SECU", "target_level": 3, "weight": 0.7 },
+      { "skill": "RISK", "target_level": 3, "weight": 0.6 },
+      { "skill": "COMM", "target_level": 3, "weight": 0.6 },
+      { "skill": "AGIL", "target_level": 3, "weight": 0.6 },
+      { "skill": "SWEN", "target_level": 3, "weight": 0.6 },
+      { "skill": "AIOP", "target_level": 3, "weight": 0.6 },
+      { "skill": "ANAL", "target_level": 3, "weight": 0.5 }
+    ]
+  },
+  {
+    "name": "Data Scientist",
+    "family": "Data",
+    "seniority": "Mid",
+    "description": "Builds models and insights from data to drive decision-making.",
+    "requirements": [
+      { "skill": "DSCI", "target_level": 4, "weight": 1.0 },
+      { "skill": "DATA", "target_level": 4, "weight": 0.8 },
+      { "skill": "COMM", "target_level": 4, "weight": 0.8 },
+      { "skill": "AIOP", "target_level": 3, "weight": 0.7 },
+      { "skill": "ANAL", "target_level": 4, "weight": 0.7 },
+      { "skill": "RISK", "target_level": 3, "weight": 0.6 },
+      { "skill": "SECU", "target_level": 3, "weight": 0.5 },
+      { "skill": "AGIL", "target_level": 3, "weight": 0.6 },
+      { "skill": "CLDT", "target_level": 3, "weight": 0.6 },
+      { "skill": "SWEN", "target_level": 3, "weight": 0.5 }
+    ]
+  },
+  {
+    "name": "Security Engineer",
+    "family": "Security",
+    "seniority": "Mid",
+    "description": "Implements and validates security controls and responses.",
+    "requirements": [
+      { "skill": "SECU", "target_level": 4, "weight": 1.0 },
+      { "skill": "RISK", "target_level": 4, "weight": 0.9 },
+      { "skill": "DEOP", "target_level": 3, "weight": 0.7 },
+      { "skill": "CLDT", "target_level": 3, "weight": 0.6 },
+      { "skill": "COMM", "target_level": 3, "weight": 0.7 },
+      { "skill": "SWEN", "target_level": 3, "weight": 0.6 },
+      { "skill": "DATA", "target_level": 3, "weight": 0.5 },
+      { "skill": "AGIL", "target_level": 3, "weight": 0.5 },
+      { "skill": "ARCH", "target_level": 3, "weight": 0.6 },
+      { "skill": "ANAL", "target_level": 3, "weight": 0.5 }
+    ]
+  },
+  {
+    "name": "Solution Architect",
+    "family": "Architecture",
+    "seniority": "Senior",
+    "description": "Designs solution architectures aligned to business goals.",
+    "requirements": [
+      { "skill": "ARCH", "target_level": 5, "weight": 1.0 },
+      { "skill": "COMM", "target_level": 5, "weight": 0.9 },
+      { "skill": "STMG", "target_level": 4, "weight": 0.8 },
+      { "skill": "RISK", "target_level": 4, "weight": 0.7 },
+      { "skill": "CLDT", "target_level": 4, "weight": 0.8 },
+      { "skill": "SECU", "target_level": 4, "weight": 0.7 },
+      { "skill": "DEOP", "target_level": 4, "weight": 0.7 },
+      { "skill": "SWEN", "target_level": 4, "weight": 0.7 },
+      { "skill": "ANAL", "target_level": 4, "weight": 0.6 },
+      { "skill": "LEAD", "target_level": 4, "weight": 0.7 }
+    ]
+  },
+  {
+    "name": "DevOps Engineer",
+    "family": "Engineering",
+    "seniority": "Mid",
+    "description": "Builds CI/CD, automation, and operational tooling.",
+    "requirements": [
+      { "skill": "DEOP", "target_level": 4, "weight": 1.0 },
+      { "skill": "CLDT", "target_level": 4, "weight": 0.8 },
+      { "skill": "SECU", "target_level": 3, "weight": 0.7 },
+      { "skill": "RISK", "target_level": 3, "weight": 0.6 },
+      { "skill": "SWEN", "target_level": 3, "weight": 0.6 },
+      { "skill": "COMM", "target_level": 3, "weight": 0.6 },
+      { "skill": "AGIL", "target_level": 3, "weight": 0.6 },
+      { "skill": "DATA", "target_level": 3, "weight": 0.4 },
+      { "skill": "ARCH", "target_level": 3, "weight": 0.6 },
+      { "skill": "LEAD", "target_level": 3, "weight": 0.5 }
+    ]
+  },
+  {
+    "name": "Cloud Engineer",
+    "family": "Engineering",
+    "seniority": "Mid",
+    "description": "Designs and runs cloud infrastructure and platforms.",
+    "requirements": [
+      { "skill": "CLDT", "target_level": 4, "weight": 1.0 },
+      { "skill": "DEOP", "target_level": 4, "weight": 0.8 },
+      { "skill": "SECU", "target_level": 3, "weight": 0.7 },
+      { "skill": "RISK", "target_level": 3, "weight": 0.6 },
+      { "skill": "SWEN", "target_level": 3, "weight": 0.5 },
+      { "skill": "ARCH", "target_level": 3, "weight": 0.6 },
+      { "skill": "COMM", "target_level": 3, "weight": 0.6 },
+      { "skill": "AGIL", "target_level": 3, "weight": 0.5 },
+      { "skill": "DATA", "target_level": 3, "weight": 0.4 },
+      { "skill": "LEAD", "target_level": 3, "weight": 0.4 }
+    ]
+  },
+  {
+    "name": "Business Analyst",
+    "family": "Business",
+    "seniority": "Mid",
+    "description": "Elicits requirements and aligns solutions to business outcomes.",
+    "requirements": [
+      { "skill": "ANAL", "target_level": 4, "weight": 1.0 },
+      { "skill": "COMM", "target_level": 4, "weight": 0.9 },
+      { "skill": "STMG", "target_level": 4, "weight": 0.8 },
+      { "skill": "PRMG", "target_level": 3, "weight": 0.6 },
+      { "skill": "RISK", "target_level": 3, "weight": 0.6 },
+      { "skill": "AGIL", "target_level": 3, "weight": 0.6 },
+      { "skill": "PRMG2", "target_level": 3, "weight": 0.6 },
+      { "skill": "DATA", "target_level": 3, "weight": 0.5 },
+      { "skill": "UXRD", "target_level": 3, "weight": 0.5 },
+      { "skill": "LEAD", "target_level": 3, "weight": 0.5 }
+    ]
+  },
+  {
+    "name": "Project Manager",
+    "family": "Delivery",
+    "seniority": "Mid",
+    "description": "Delivers projects on scope, schedule, and budget.",
+    "requirements": [
+      { "skill": "PRMG", "target_level": 4, "weight": 1.0 },
+      { "skill": "COMM", "target_level": 4, "weight": 0.9 },
+      { "skill": "STMG", "target_level": 4, "weight": 0.8 },
+      { "skill": "RISK", "target_level": 4, "weight": 0.8 },
+      { "skill": "AGIL", "target_level": 4, "weight": 0.7 },
+      { "skill": "PRMG2", "target_level": 3, "weight": 0.6 },
+      { "skill": "LEAD", "target_level": 3, "weight": 0.7 },
+      { "skill": "SECU", "target_level": 2, "weight": 0.3 },
+      { "skill": "DATA", "target_level": 2, "weight": 0.3 },
+      { "skill": "ARCH", "target_level": 2, "weight": 0.3 }
+    ]
+  },
+  {
+    "name": "Program Manager",
+    "family": "Delivery",
+    "seniority": "Senior",
+    "description": "Leads complex programs and realizes benefits.",
+    "requirements": [
+      { "skill": "PGMG", "target_level": 5, "weight": 1.0 },
+      { "skill": "PRMG", "target_level": 5, "weight": 0.9 },
+      { "skill": "STMG", "target_level": 5, "weight": 0.9 },
+      { "skill": "RISK", "target_level": 5, "weight": 0.8 },
+      { "skill": "COMM", "target_level": 5, "weight": 0.9 },
+      { "skill": "LEAD", "target_level": 5, "weight": 0.9 },
+      { "skill": "AGIL", "target_level": 4, "weight": 0.7 },
+      { "skill": "PRMG2", "target_level": 4, "weight": 0.6 },
+      { "skill": "ARCH", "target_level": 3, "weight": 0.4 },
+      { "skill": "SECU", "target_level": 3, "weight": 0.4 }
+    ]
+  },
+  {
+    "name": "Machine Learning Engineer",
+    "family": "Data",
+    "seniority": "Mid",
+    "description": "Builds ML systems and deploys models into production.",
+    "requirements": [
+      { "skill": "DSCI", "target_level": 4, "weight": 0.9 },
+      { "skill": "AIOP", "target_level": 4, "weight": 1.0 },
+      { "skill": "DATA", "target_level": 4, "weight": 0.8 },
+      { "skill": "CLDT", "target_level": 4, "weight": 0.7 },
+      { "skill": "DEOP", "target_level": 3, "weight": 0.7 },
+      { "skill": "SECU", "target_level": 3, "weight": 0.6 },
+      { "skill": "SWEN", "target_level": 3, "weight": 0.6 },
+      { "skill": "AGIL", "target_level": 3, "weight": 0.6 },
+      { "skill": "COMM", "target_level": 3, "weight": 0.6 },
+      { "skill": "RISK", "target_level": 3, "weight": 0.5 }
+    ]
+  },
+  {
+    "name": "Site Reliability Engineer",
+    "family": "Engineering",
+    "seniority": "Senior",
+    "description": "Improves reliability, scalability, and operability of systems.",
+    "requirements": [
+      { "skill": "DEOP", "target_level": 5, "weight": 1.0 },
+      { "skill": "CLDT", "target_level": 4, "weight": 0.9 },
+      { "skill": "SECU", "target_level": 4, "weight": 0.8 },
+      { "skill": "RISK", "target_level": 4, "weight": 0.8 },
+      { "skill": "SWEN", "target_level": 4, "weight": 0.7 },
+      { "skill": "COMM", "target_level": 4, "weight": 0.8 },
+      { "skill": "ARCH", "target_level": 4, "weight": 0.7 },
+      { "skill": "AGIL", "target_level": 4, "weight": 0.7 },
+      { "skill": "DATA", "target_level": 3, "weight": 0.5 },
+      { "skill": "LEAD", "target_level": 4, "weight": 0.6 }
+    ]
+  }
+]

@@ -1,0 +1,100 @@
+[
+  {
+    "title": "Software Engineering Best Practices",
+    "url": "https://example.org/resources/software-engineering-best-practices",
+    "provider": "Example Academy",
+    "resource_type": "course",
+    "difficulty": "intermediate",
+    "description": "Covers testing, code quality, design principles, and maintainability.",
+    "skills": [
+      { "skill": "SWEN", "level_min": 2, "level_max": 5 },
+      { "skill": "AGIL", "level_min": 2, "level_max": 4 }
+    ]
+  },
+  {
+    "title": "Practical DevOps with CI/CD",
+    "url": "https://example.org/resources/practical-devops-cicd",
+    "provider": "Cloud School",
+    "resource_type": "course",
+    "difficulty": "intermediate",
+    "description": "Builds CI/CD pipelines, infrastructure as code, and observability.",
+    "skills": [
+      { "skill": "DEOP", "level_min": 2, "level_max": 5 },
+      { "skill": "CLDT", "level_min": 2, "level_max": 4 }
+    ]
+  },
+  {
+    "title": "Leading High-Performing Teams",
+    "url": "https://example.org/resources/leading-high-performing-teams",
+    "provider": "Leadership Hub",
+    "resource_type": "course",
+    "difficulty": "advanced",
+    "description": "Leadership skills for motivating, coaching, and driving outcomes.",
+    "skills": [
+      { "skill": "LEAD", "level_min": 3, "level_max": 6 },
+      { "skill": "COMM", "level_min": 3, "level_max": 6 },
+      { "skill": "STMG", "level_min": 3, "level_max": 5 }
+    ]
+  },
+  {
+    "title": "Secure Software Development",
+    "url": "https://example.org/resources/secure-software-development",
+    "provider": "Security Guild",
+    "resource_type": "course",
+    "difficulty": "intermediate",
+    "description": "Threat modeling, secure coding patterns, and SDLC security.",
+    "skills": [
+      { "skill": "SECU", "level_min": 2, "level_max": 5 },
+      { "skill": "RISK", "level_min": 3, "level_max": 5 }
+    ]
+  },
+  {
+    "title": "Solution Architecture Foundations",
+    "url": "https://example.org/resources/solution-architecture-foundations",
+    "provider": "Arch School",
+    "resource_type": "article",
+    "difficulty": "beginner",
+    "description": "Core concepts of solution architecture and trade-off analysis.",
+    "skills": [
+      { "skill": "ARCH", "level_min": 2, "level_max": 4 },
+      { "skill": "COMM", "level_min": 2, "level_max": 4 }
+    ]
+  },
+  {
+    "title": "Data Engineering on the Cloud",
+    "url": "https://example.org/resources/data-engineering-on-cloud",
+    "provider": "Data University",
+    "resource_type": "course",
+    "difficulty": "intermediate",
+    "description": "Pipelines, storage, processing, and cost optimization in cloud.",
+    "skills": [
+      { "skill": "DATA", "level_min": 2, "level_max": 5 },
+      { "skill": "CLDT", "level_min": 2, "level_max": 4 }
+    ]
+  },
+  {
+    "title": "Product Discovery and Strategy",
+    "url": "https://example.org/resources/product-discovery-strategy",
+    "provider": "PM School",
+    "resource_type": "course",
+    "difficulty": "intermediate",
+    "description": "Discover user problems, prioritize opportunities, and set strategy.",
+    "skills": [
+      { "skill": "PRMG2", "level_min": 3, "level_max": 5 },
+      { "skill": "UXRD", "level_min": 2, "level_max": 4 },
+      { "skill": "ANAL", "level_min": 3, "level_max": 4 }
+    ]
+  },
+  {
+    "title": "Agile Delivery Essentials",
+    "url": "https://example.org/resources/agile-delivery-essentials",
+    "provider": "Agile Institute",
+    "resource_type": "course",
+    "difficulty": "beginner",
+    "description": "Scrum, Kanban, and lean practices for iterative delivery.",
+    "skills": [
+      { "skill": "AGIL", "level_min": 2, "level_max": 4 },
+      { "skill": "PRMG", "level_min": 2, "level_max": 4 }
+    ]
+  }
+]

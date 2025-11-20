@@ -1,0 +1,162 @@
+[
+  {
+    "code": "LEAD",
+    "name": "Leadership",
+    "category": "Leadership",
+    "level_min": 3,
+    "level_max": 7,
+    "description": "Inspires and guides individuals and teams to achieve outcomes; sets direction and cultivates a culture of excellence."
+  },
+  {
+    "code": "COMM",
+    "name": "Communication",
+    "category": "Professional Skills",
+    "level_min": 2,
+    "level_max": 7,
+    "description": "Presents information clearly and listens effectively across audiences and channels."
+  },
+  {
+    "code": "STMG",
+    "name": "Stakeholder Management",
+    "category": "Business Change",
+    "level_min": 3,
+    "level_max": 7,
+    "description": "Identifies stakeholders, analyses needs, and manages expectations to achieve outcomes."
+  },
+  {
+    "code": "PRMG",
+    "name": "Project Management",
+    "category": "Delivery and Operation",
+    "level_min": 2,
+    "level_max": 7,
+    "description": "Plans, initiates, executes, and closes projects; manages risks, scope, schedule, and budget."
+  },
+  {
+    "code": "PGMG",
+    "name": "Program Management",
+    "category": "Delivery and Operation",
+    "level_min": 4,
+    "level_max": 7,
+    "description": "Leads programs of related projects to deliver strategic outcomes and benefits."
+  },
+  {
+    "code": "RISK",
+    "name": "Risk Management",
+    "category": "Strategy and Architecture",
+    "level_min": 3,
+    "level_max": 7,
+    "description": "Identifies, assesses, and mitigates risks across initiatives and operations."
+  },
+  {
+    "code": "ARCH",
+    "name": "Solution Architecture",
+    "category": "Strategy and Architecture",
+    "level_min": 3,
+    "level_max": 7,
+    "description": "Designs end-to-end solutions aligning business, data, application, and technology."
+  },
+  {
+    "code": "SWEN",
+    "name": "Software Engineering",
+    "category": "Development and Implementation",
+    "level_min": 2,
+    "level_max": 7,
+    "description": "Designs, develops, tests, and maintains software systems following engineering practices."
+  },
+  {
+    "code": "DEOP",
+    "name": "DevOps Engineering",
+    "category": "Delivery and Operation",
+    "level_min": 2,
+    "level_max": 7,
+    "description": "Builds CI/CD, automation, and observability to streamline delivery and operations."
+  },
+  {
+    "code": "SECU",
+    "name": "Cyber Security",
+    "category": "Security",
+    "level_min": 2,
+    "level_max": 7,
+    "description": "Protects systems and data; applies security controls, threat modeling, and response."
+  },
+  {
+    "code": "DATA",
+    "name": "Data Engineering",
+    "category": "Data and Analytics",
+    "level_min": 2,
+    "level_max": 7,
+    "description": "Designs and operates data pipelines, storage, and processing at scale."
+  },
+  {
+    "code": "DSCI",
+    "name": "Data Science",
+    "category": "Data and Analytics",
+    "level_min": 2,
+    "level_max": 7,
+    "description": "Applies statistics and ML to derive insights and predictive models."
+  },
+  {
+    "code": "UXRD",
+    "name": "User Research",
+    "category": "Change and Transformation",
+    "level_min": 2,
+    "level_max": 6,
+    "description": "Understands user needs via qualitative and quantitative research."
+  },
+  {
+    "code": "UXDG",
+    "name": "UX Design",
+    "category": "Change and Transformation",
+    "level_min": 2,
+    "level_max": 7,
+    "description": "Designs user experiences and interfaces grounded in research and accessibility."
+  },
+  {
+    "code": "PMKT",
+    "name": "Product Marketing",
+    "category": "Business",
+    "level_min": 2,
+    "level_max": 6,
+    "description": "Positions products, crafts messaging, and drives go-to-market activities."
+  },
+  {
+    "code": "PRMG2",
+    "name": "Product Management",
+    "category": "Business",
+    "level_min": 2,
+    "level_max": 7,
+    "description": "Discovers problems, defines strategy, prioritizes work, and delivers value."
+  },
+  {
+    "code": "ANAL",
+    "name": "Business Analysis",
+    "category": "Business Change",
+    "level_min": 2,
+    "level_max": 7,
+    "description": "Elicits and documents requirements; aligns solutions to business goals."
+  },
+  {
+    "code": "CLDT",
+    "name": "Cloud Engineering",
+    "category": "Strategy and Architecture",
+    "level_min": 2,
+    "level_max": 7,
+    "description": "Designs and builds cloud platforms and services; optimizes reliability and cost."
+  },
+  {
+    "code": "AGIL",
+    "name": "Agile Delivery",
+    "category": "Delivery and Operation",
+    "level_min": 2,
+    "level_max": 7,
+    "description": "Applies Agile and lean practices for iterative value delivery."
+  },
+  {
+    "code": "AIOP",
+    "name": "MLOps",
+    "category": "Data and Analytics",
+    "level_min": 2,
+    "level_max": 7,
+    "description": "Operationalizes ML models with reproducibility, monitoring, and governance."
+  }
+]

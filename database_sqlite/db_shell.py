@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Interactive SQLite database shell for database_sqlite"""
+"""Interactive SQLite database shell for database_sqlite
+
+Reads the default DB file (myapp.db) unless you created the DB elsewhere via SQLITE_DB_PATH and init_db.py.
+"""
 
 import sqlite3
 import sys

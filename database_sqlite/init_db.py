@@ -1,132 +1,357 @@
 #!/usr/bin/env python3
-"""Initialize SQLite database for database_sqlite"""
+"""Initialize SQLite database for Career Navigator Platform (database_sqlite)
 
-import sqlite3
+This script:
+- Loads config from environment (.env recommended) with SQLITE_DB_PATH.
+- Creates the full schema (roles, skills, role_skill_requirements, user_skills,
+  user_progress, learning_resources, career_paths, recommendations) with FKs and indexes.
+- Idempotently seeds data from JSON files in ./seeds:
+    - seeds/sfia_skills.json
+    - seeds/roles.json
+    - seeds/learning_resources.json
+- Writes db_connection.txt and db_visualizer/sqlite.env for convenience.
+
+Run:
+  python3 init_db.py
+
+Environment:
+  SQLITE_DB_PATH=/absolute/or/relative/path/to/myapp.db
+"""
+
+import json
 import os
+import sqlite3
+from contextlib import closing
+from datetime import datetime
+from pathlib import Path
 
-DB_NAME = "myapp.db"
-DB_USER = "kaviasqlite"  # Not used for SQLite, but kept for consistency
-DB_PASSWORD = "kaviadefaultpassword"  # Not used for SQLite, but kept for consistency
-DB_PORT = "5000"  # Not used for SQLite, but kept for consistency
+DEFAULT_DB = "myapp.db"
+SEEDS_DIR = Path(__file__).parent / "seeds"
+SKILLS_FILE = SEEDS_DIR / "sfia_skills.json"
+ROLES_FILE = SEEDS_DIR / "roles.json"
+RESOURCES_FILE = SEEDS_DIR / "learning_resources.json"
 
-print("Starting SQLite setup...")
+def load_env():
+    """Load environment vars needed by this script."""
+    db_path = os.getenv("SQLITE_DB_PATH", DEFAULT_DB)
+    return {"db_path": db_path}
 
-# Check if database already exists
-db_exists = os.path.exists(DB_NAME)
-if db_exists:
-    print(f"SQLite database already exists at {DB_NAME}")
-    # Verify it's accessible
-    try:
-        conn = sqlite3.connect(DB_NAME)
-        conn.execute("SELECT 1")
-        conn.close()
-        print("Database is accessible and working.")
-    except Exception as e:
-        print(f"Warning: Database exists but may be corrupted: {e}")
-else:
-    print("Creating new SQLite database...")
+def ensure_dirs():
+    """Ensure seeds dir and db_visualizer dir exist."""
+    SEEDS_DIR.mkdir(parents=True, exist_ok=True)
+    (Path(__file__).parent / "db_visualizer").mkdir(parents=True, exist_ok=True)
 
-# Create database with sample tables
-conn = sqlite3.connect(DB_NAME)
-cursor = conn.cursor()
+def connect(db_path: str) -> sqlite3.Connection:
+    """Create a SQLite connection with foreign keys enabled."""
+    conn = sqlite3.connect(db_path)
+    conn.execute("PRAGMA foreign_keys = ON")
+    conn.execute("PRAGMA journal_mode = WAL")
+    return conn
 
-# Create initial schema
-cursor.execute("""
-    CREATE TABLE IF NOT EXISTS app_info (
+def create_schema(conn: sqlite3.Connection):
+    """Create all required tables, constraints, and indexes if missing."""
+    cur = conn.cursor()
+
+    # Core entities
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS skills (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        key TEXT UNIQUE NOT NULL,
-        value TEXT,
+        code TEXT UNIQUE,                -- e.g., "AUSM", "DLMG" for leadership-like codes
+        name TEXT NOT NULL,
+        category TEXT,
+        level_min INTEGER,               -- min SFIA-like level suggested (1-7)
+        level_max INTEGER,               -- max SFIA-like level suggested (1-7)
+        description TEXT
+    )
+    """)
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS roles (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT UNIQUE NOT NULL,
+        family TEXT,                     -- e.g., "Engineering", "Leadership"
+        seniority TEXT,                  -- e.g., "Junior", "Mid", "Senior"
+        description TEXT
+    )
+    """)
+
+    # Requirements: a role requires a skill at a certain target level/weight
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS role_skill_requirements (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        role_id INTEGER NOT NULL,
+        skill_id INTEGER NOT NULL,
+        target_level INTEGER NOT NULL,   -- 1-7 scale
+        weight REAL DEFAULT 1.0,         -- relative importance
+        FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
+        FOREIGN KEY (skill_id) REFERENCES skills(id) ON DELETE CASCADE,
+        UNIQUE (role_id, skill_id)
+    )
+    """)
+
+    # User skill profile and progress
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS user_skills (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        skill_id INTEGER NOT NULL,
+        level INTEGER NOT NULL,          -- user current level 1-7
+        evidence TEXT,                   -- notes/links supporting level
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE (user_id, skill_id),
+        FOREIGN KEY (skill_id) REFERENCES skills(id) ON DELETE CASCADE
+    )
+    """)
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS user_progress (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        role_id INTEGER,                 -- optional: focus role
+        skill_id INTEGER NOT NULL,
+        action TEXT NOT NULL,            -- e.g., "completed_resource", "assessed_level"
+        details TEXT,                    -- JSON or text blob
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE SET NULL,
+        FOREIGN KEY (skill_id) REFERENCES skills(id) ON DELETE CASCADE
+    )
+    """)
+
+    # Learning resources and mapping to skills
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS learning_resources (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        url TEXT NOT NULL,
+        provider TEXT,
+        resource_type TEXT,              -- e.g., course, article, book
+        difficulty TEXT,                 -- beginner/intermediate/advanced
+        description TEXT
+    )
+    """)
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS learning_resource_skills (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        resource_id INTEGER NOT NULL,
+        skill_id INTEGER NOT NULL,
+        recommended_level_min INTEGER,   -- suitable from level
+        recommended_level_max INTEGER,   -- suitable to level
+        FOREIGN KEY (resource_id) REFERENCES learning_resources(id) ON DELETE CASCADE,
+        FOREIGN KEY (skill_id) REFERENCES skills(id) ON DELETE CASCADE,
+        UNIQUE (resource_id, skill_id)
+    )
+    """)
+
+    # Career path graph: role -> next_role with recommended skills deltas
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS career_paths (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        from_role_id INTEGER NOT NULL,
+        to_role_id INTEGER NOT NULL,
+        rationale TEXT,                  -- explanation
+        FOREIGN KEY (from_role_id) REFERENCES roles(id) ON DELETE CASCADE,
+        FOREIGN KEY (to_role_id) REFERENCES roles(id) ON DELETE CASCADE,
+        UNIQUE (from_role_id, to_role_id)
+    )
+    """)
+
+    # Recommendations storage (e.g., from LLM) for auditability
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS recommendations (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        context TEXT,                    -- optional JSON of inputs
+        recommendations_json TEXT NOT NULL, -- JSON blob of recommendations
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
-""")
+    """)
 
-# Create a sample users table as an example
-cursor.execute("""
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT UNIQUE NOT NULL,
-        email TEXT UNIQUE NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-""")
+    # Helpful indexes
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_role_skill_role ON role_skill_requirements(role_id)")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_role_skill_skill ON role_skill_requirements(skill_id)")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_user_skills_user ON user_skills(user_id)")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_user_skills_skill ON user_skills(skill_id)")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_user_progress_user ON user_progress(user_id)")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_learning_resource_skills_res ON learning_resource_skills(resource_id)")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_learning_resource_skills_skill ON learning_resource_skills(skill_id)")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_career_paths_from ON career_paths(from_role_id)")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_career_paths_to ON career_paths(to_role_id)")
 
-# Insert initial data
-cursor.execute("INSERT OR REPLACE INTO app_info (key, value) VALUES (?, ?)", 
-               ("project_name", "database_sqlite"))
-cursor.execute("INSERT OR REPLACE INTO app_info (key, value) VALUES (?, ?)", 
-               ("version", "0.1.0"))
-cursor.execute("INSERT OR REPLACE INTO app_info (key, value) VALUES (?, ?)", 
-               ("author", "John Doe"))
-cursor.execute("INSERT OR REPLACE INTO app_info (key, value) VALUES (?, ?)", 
-               ("description", ""))
+    conn.commit()
 
-conn.commit()
+def _upsert_skill(cur, skill):
+    cur.execute("""
+        INSERT INTO skills (code, name, category, level_min, level_max, description)
+        VALUES (?, ?, ?, ?, ?, ?)
+        ON CONFLICT(code) DO UPDATE SET
+            name=excluded.name,
+            category=excluded.category,
+            level_min=excluded.level_min,
+            level_max=excluded.level_max,
+            description=excluded.description
+    """, (
+        skill.get("code"),
+        skill["name"],
+        skill.get("category"),
+        skill.get("level_min"),
+        skill.get("level_max"),
+        skill.get("description"),
+    ))
 
-# Get database statistics
-cursor.execute("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")
-table_count = cursor.fetchone()[0]
+def _get_skill_id(cur, code_or_name):
+    cur.execute("SELECT id FROM skills WHERE code = ? OR name = ?", (code_or_name, code_or_name))
+    row = cur.fetchone()
+    return row[0] if row else None
 
-cursor.execute("SELECT COUNT(*) FROM app_info")
-record_count = cursor.fetchone()[0]
+def _upsert_role(cur, role):
+    cur.execute("""
+        INSERT INTO roles (name, family, seniority, description)
+        VALUES (?, ?, ?, ?)
+        ON CONFLICT(name) DO UPDATE SET
+            family=excluded.family,
+            seniority=excluded.seniority,
+            description=excluded.description
+    """, (role["name"], role.get("family"), role.get("seniority"), role.get("description")))
 
-conn.close()
+def _get_role_id(cur, name):
+    cur.execute("SELECT id FROM roles WHERE name = ?", (name,))
+    row = cur.fetchone()
+    return row[0] if row else None
 
-# Save connection information to a file
-current_dir = os.getcwd()
-connection_string = f"sqlite:///{current_dir}/{DB_NAME}"
+def _upsert_role_skill_req(cur, role_id, skill_id, target_level, weight):
+    cur.execute("""
+        INSERT INTO role_skill_requirements (role_id, skill_id, target_level, weight)
+        VALUES (?, ?, ?, ?)
+        ON CONFLICT(role_id, skill_id) DO UPDATE SET
+            target_level=excluded.target_level,
+            weight=excluded.weight
+    """, (role_id, skill_id, target_level, weight))
 
-try:
-    with open("db_connection.txt", "w") as f:
-        f.write(f"# SQLite connection methods:\n")
-        f.write(f"# Python: sqlite3.connect('{DB_NAME}')\n")
-        f.write(f"# Connection string: {connection_string}\n")
-        f.write(f"# File path: {current_dir}/{DB_NAME}\n")
-    print("Connection information saved to db_connection.txt")
-except Exception as e:
-    print(f"Warning: Could not save connection info: {e}")
+def _upsert_resource(cur, res):
+    cur.execute("""
+        INSERT INTO learning_resources (title, url, provider, resource_type, difficulty, description)
+        VALUES (?, ?, ?, ?, ?, ?)
+        ON CONFLICT(url) DO UPDATE SET
+            title=excluded.title,
+            provider=excluded.provider,
+            resource_type=excluded.resource_type,
+            difficulty=excluded.difficulty,
+            description=excluded.description
+    """, (res["title"], res["url"], res.get("provider"), res.get("resource_type"),
+          res.get("difficulty"), res.get("description")))
+    # fetch id
+    cur.execute("SELECT id FROM learning_resources WHERE url = ?", (res["url"],))
+    row = cur.fetchone()
+    return row[0]
 
-# Create environment variables file for Node.js viewer
-db_path = os.path.abspath(DB_NAME)
+def _upsert_resource_skill(cur, resource_id, skill_code_or_name, lv_min, lv_max):
+    skill_id = _get_skill_id(cur, skill_code_or_name)
+    if not skill_id:
+        return
+    cur.execute("""
+        INSERT INTO learning_resource_skills (resource_id, skill_id, recommended_level_min, recommended_level_max)
+        VALUES (?, ?, ?, ?)
+        ON CONFLICT(resource_id, skill_id) DO UPDATE SET
+            recommended_level_min=excluded.recommended_level_min,
+            recommended_level_max=excluded.recommended_level_max
+    """, (resource_id, skill_id, lv_min, lv_max))
 
-# Ensure db_visualizer directory exists
-if not os.path.exists("db_visualizer"):
-    os.makedirs("db_visualizer", exist_ok=True)
-    print("Created db_visualizer directory")
+def seed_from_json(conn: sqlite3.Connection):
+    """Seed skills, roles with requirements, and learning resources idempotently."""
+    cur = conn.cursor()
 
-try:
-    with open("db_visualizer/sqlite.env", "w") as f:
-        f.write(f"export SQLITE_DB=\"{db_path}\"\n")
-    print(f"Environment variables saved to db_visualizer/sqlite.env")
-except Exception as e:
-    print(f"Warning: Could not save environment variables: {e}")
+    # Skills
+    if SKILLS_FILE.exists():
+        with open(SKILLS_FILE, "r", encoding="utf-8") as f:
+            skills = json.load(f)
+        for s in skills:
+            _upsert_skill(cur, s)
+        conn.commit()
+        print(f"Seeded skills: {len(skills)}")
+    else:
+        print(f"Warning: {SKILLS_FILE} not found. Skills not seeded.")
 
-print("\nSQLite setup complete!")
-print(f"Database: {DB_NAME}")
-print(f"Location: {current_dir}/{DB_NAME}")
-print("")
+    # Roles and role_skill_requirements
+    if ROLES_FILE.exists():
+        with open(ROLES_FILE, "r", encoding="utf-8") as f:
+            roles = json.load(f)
+        role_count = 0
+        req_count = 0
+        for r in roles:
+            _upsert_role(cur, r)
+            role_id = _get_role_id(cur, r["name"])
+            if role_id and r.get("requirements"):
+                for req in r["requirements"]:
+                    skill_id = _get_skill_id(cur, req["skill"])
+                    if skill_id:
+                        _upsert_role_skill_req(
+                            cur, role_id, skill_id,
+                            int(req.get("target_level", 3)),
+                            float(req.get("weight", 1.0))
+                        )
+                        req_count += 1
+            role_count += 1
+        conn.commit()
+        print(f"Seeded roles: {role_count} and requirements: {req_count}")
+    else:
+        print(f"Warning: {ROLES_FILE} not found. Roles not seeded.")
 
-print("To use with Node.js viewer, run: source db_visualizer/sqlite.env")
+    # Learning resources and mapping to skills
+    if RESOURCES_FILE.exists():
+        with open(RESOURCES_FILE, "r", encoding="utf-8") as f:
+            resources = json.load(f)
+        res_count = 0
+        link_count = 0
+        for res in resources:
+            res_id = _upsert_resource(cur, res)
+            res_count += 1
+            for sk in res.get("skills", []):
+                _upsert_resource_skill(
+                    cur, res_id,
+                    sk["skill"],
+                    sk.get("level_min"),
+                    sk.get("level_max"),
+                )
+                link_count += 1
+        conn.commit()
+        print(f"Seeded learning resources: {res_count} and links: {link_count}")
+    else:
+        print(f"Warning: {RESOURCES_FILE} not found. Learning resources not seeded.")
 
-print("\nTo connect to the database, use one of the following methods:")
-print(f"1. Python: sqlite3.connect('{DB_NAME}')")
-print(f"2. Connection string: {connection_string}")
-print(f"3. Direct file access: {current_dir}/{DB_NAME}")
-print("")
+def write_connection_info(db_path: str):
+    current_dir = os.getcwd()
+    abs_db = str(Path(db_path).resolve())
+    conn_str = f"sqlite:///{abs_db}"
+    with open(Path(__file__).parent / "db_connection.txt", "w", encoding="utf-8") as f:
+        f.write("# SQLite connection methods:\n")
+        f.write(f"# Python: sqlite3.connect('{abs_db}')\n")
+        f.write(f"# Connection string: {conn_str}\n")
+        f.write(f"# File path: {abs_db}\n")
+    # For viewer
+    with open(Path(__file__).parent / "db_visualizer" / "sqlite.env", "w", encoding="utf-8") as f:
+        f.write(f'export SQLITE_DB="{abs_db}"\n')
 
-print("Database statistics:")
-print(f"  Tables: {table_count}")
-print(f"  App info records: {record_count}")
+def main():
+    env = load_env()
+    ensure_dirs()
+    db_path = env["db_path"]
 
-# If sqlite3 CLI is available, show how to use it
-try:
-    import subprocess
-    result = subprocess.run(['which', 'sqlite3'], capture_output=True, text=True)
-    if result.returncode == 0:
-        print("")
-        print("SQLite CLI is available. You can also use:")
-        print(f"  sqlite3 {DB_NAME}")
-except:
-    pass
+    db_exists = Path(db_path).exists()
+    if db_exists:
+        print(f"Using existing SQLite database at {db_path}")
+    else:
+        print(f"Creating SQLite database at {db_path}")
 
-# Exit successfully
-print("\nScript completed successfully.")
+    with closing(connect(db_path)) as conn:
+        create_schema(conn)
+        seed_from_json(conn)
+
+    write_connection_info(db_path)
+
+    print("\nSQLite setup complete!")
+    print(f"Database: {Path(db_path).name}")
+    print(f"Location: {str(Path(db_path).resolve())}")
+
+if __name__ == "__main__":
+    main()

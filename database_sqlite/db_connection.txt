@@ -1,4 +1,5 @@
 # SQLite connection methods:
-# Python: sqlite3.connect('myapp.db')
+# Python: sqlite3.connect('myapp.db')  # or use path from SQLITE_DB_PATH
 # Connection string: sqlite:////home/kavia/workspace/code-generation/career-navigator-platform-209461-209471/database_sqlite/myapp.db
 # File path: /home/kavia/workspace/code-generation/career-navigator-platform-209461-209471/database_sqlite/myapp.db
+# Env: set SQLITE_DB_PATH to use a custom database file when running init_db.py
