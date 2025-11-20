@@ -1,0 +1,4 @@
+{
+    "command": "python init_db.py && cd db_visualizer && PORT=<port> HOST=<host> BROWSER=none npm start",
+    "working_directory": "/home/kavia/workspace/code-generation/career-navigator-platform-209461-209471/database_sqlite"
+}
